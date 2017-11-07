@@ -585,7 +585,7 @@ default_timeout() ->
 %% @private
 %% Only has to be unique per-pid
 mk_reqid() ->
-  erlang:phash2(erlang:now()).
+  erlang:phash2(os:timestamp()).
 
 %% @private
 keyfind(Key, TupleList) ->
