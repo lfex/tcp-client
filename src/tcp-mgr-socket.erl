@@ -7,7 +7,7 @@
 %%% @end
 %%% @see <a href="https://github.com/basho/riak-erlang-client">Riak Erlang Client</a>
 %%%-------------------------------------------------------------------
--module(tcp_client_socket).
+-module('tcp-mgr-socket').
 
 -behaviour(poolboy_worker).
 -behaviour(gen_server).

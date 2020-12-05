@@ -1,2 +1,3 @@
-# tcp_client
-An Erlang TCP client connections manager.
+# tcp-mgr
+
+*An Erlang TCP client connection manager*

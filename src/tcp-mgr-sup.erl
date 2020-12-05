@@ -25,7 +25,7 @@
 %%% Supervisor.
 %%% @end
 %%%-------------------------------------------------------------------
--module(tcp_client_sup).
+-module('tcp-mgr-sup').
 
 -behaviour(supervisor).
 

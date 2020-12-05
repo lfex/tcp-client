@@ -1,0 +1,15 @@
+{application, 'tcp-mgr',
+ [
+  {description, "A TCP Client Connections Manager"},
+  {vsn, "0.1.0"},
+  {applications,
+   [
+    kernel,
+    stdlib
+   ]
+  },
+  {modules, []},
+  {mod, {'tcp-mgr-app', []}},
+  {registered, []}
+ ]
+}.

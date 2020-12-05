@@ -23,7 +23,7 @@
 %%% @copyright (C) 2015, <Carlos Andres Bolaños>, All Rights Reserved.
 %%% @doc Main interface.
 %%%-------------------------------------------------------------------
--module(tcp_client).
+-module('tcp-mgr').
 
 %% API
 -export([start_link/4, start_link/5]).
@@ -43,15 +43,15 @@ start_link(PoolName, Size, Address, Port) ->
 -spec start_link(
   atom(),
   pos_integer(),
-  tcp_client_socket:address(),
-  tcp_client_socket:portnum(),
-  tcp_client_socket:client_options()
+  'tcp-mgr-socket':address(),
+  'tcp-mgr-socket':portnum(),
+  'tcp-mgr-socket':client_options()
 ) -> gen:start_ret().
 start_link(PoolName, Size, Address, Port, Options) ->
   SizeArgs = [{size, Size},
               {max_overflow, 0}],
   PoolArgs = [{name, {local, PoolName}},
-              {worker_module, tcp_client_socket}] ++ SizeArgs,
+              {worker_module, 'tcp-mgr-socket'}] ++ SizeArgs,
   WorkerArgs = [{address, Address},
                 {port, Port},
                 {options, Options}],
@@ -64,8 +64,8 @@ sync_send(PoolName, Msg) ->
 %% @doc Sends a message on the current connection and waits until server
 %%      respose arrives. Works as Request/Response.
 -spec sync_send(
-  atom(), tcp_client_socket:message(), timeout()
-) -> tcp_client_socket:sync_reply().
+  atom(), 'tcp-mgr-socket':message(), timeout()
+) -> 'tcp-mgr-socket':sync_reply().
 sync_send(PoolName, Msg, Timeout) ->
   execute(PoolName, {sync_send, [Msg, Timeout]}).
 
@@ -77,8 +77,8 @@ send(PoolName, Msg) ->
 %%      with a request id. Works asynchronously, and if the server sends
 %%      a response back, it is sent directly to the caller process.
 -spec send(
-  atom(), tcp_client_socket:message(), timeout()
-) -> tcp_client_socket:reply().
+  atom(), 'tcp-mgr-socket':message(), timeout()
+) -> 'tcp-mgr-socket':reply().
 send(PoolName, Msg, Timeout) ->
   execute(PoolName, {send, [Msg, Timeout]}).
 
@@ -91,5 +91,5 @@ execute(PoolName, {Cmd, Args}) ->
   poolboy:transaction(
     PoolName,
     fun(Worker) ->
-      apply(tcp_client_socket, Cmd, [Worker | Args])
+      apply('tcp-mgr-socket', Cmd, [Worker | Args])
     end).
