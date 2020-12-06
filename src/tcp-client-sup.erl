@@ -1,4 +1,4 @@
--module('tcp-mgr-sup').
+-module('tcp-client-sup').
 
 -behaviour(supervisor).
 
@@ -8,7 +8,7 @@
 %% Supervisor callbacks
 -export([init/1]).
 
--define(MGR, 'tcp-mgr-socket').
+-define(MGR, 'tcp-client-mgr').
 -define(CHILD(Host, Port, Options),
   #{id => ?MGR,
     start => {?MGR, start_link, [Host, Port, Options]},
@@ -30,7 +30,7 @@ start_link() ->
 %%%===================================================================
 
 init([]) ->
-  {ok, Server} = application:get_env('tcp-mgr', server),
+  {ok, Server} = application:get_env('tcp-client', server),
   {host, Host} = lists:keyfind(host, 1, Server),
   {port, Port} = lists:keyfind(port, 1, Server),
   {options, Options} = lists:keyfind(options, 1, Server),

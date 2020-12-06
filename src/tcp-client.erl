@@ -1,9 +1,9 @@
--module('tcp-mgr').
+-module('tcp-client').
 
 %% API
 -export([call_msg/1, cast_msg/1]).
 
--define(MGR, {global, 'tcp-mgr-socket'}).
+-define(MGR, {global, 'tcp-client-mgr'}).
 
 %%%===================================================================
 %%% API

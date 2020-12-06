@@ -1,4 +1,4 @@
--module('tcp-mgr-socket').
+-module('tcp-client-mgr').
 
 -behaviour(gen_statem).
 

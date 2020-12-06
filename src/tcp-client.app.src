@@ -1,4 +1,4 @@
-{application, 'tcp-mgr', [
+{application, 'tcp-client', [
     {description, "A TCP Client Connections Manager"},
     {vsn, "0.1.0"},
     {applications, [
@@ -11,12 +11,12 @@
             {port, 7099},
             {options, [
                 {tcp, [binary, {active, true}, {packet, 0}]},
-                {parser, {'tcp-mgr-socket', parse_response}},
-                {reporter, {'tcp-mgr-socket', report}}
+                {parser, {'tcp-client-mgr', parse_response}},
+                {reporter, {'tcp-client-mgr', report}}
             ]}
         ]}
     ]},  
     {modules, []},
-    {mod, {'tcp-mgr-app', []}},
+    {mod, {'tcp-client-app', []}},
     {registered, []}
 ]}.
