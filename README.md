@@ -1,3 +1,3 @@
-# tcp-mgr
+# tcp-client
 
-*An Erlang TCP client connection manager*
+*An LFE TCP client connection manager*
