@@ -105,26 +105,13 @@ connected(info, {tcp, Socket, Packet}, #{socket := Socket, from := From, parser 
 %%% Private functions
 %%%===================================================================
 
-%% XXX Move these next three functions into undertone / Extempore support
-%%     and change these to be very general / pass-through fns ...
-parse_response(Packet, {Rmod, Rfun}) ->
-    Elements = [ convert_type(E) || E <- binary:split(Packet, <<0>>, [global]), E =/= <<>> ],
-    [ apply(Rmod, Rfun, [E]) || E <- Elements ],
-    Elements.
+%% Intended to be overriden by cosuming library.
+parse_response(Packet, {_ReporterMod, _ReporterFun}) ->
+    Packet.
 
-convert_type(Data) ->
-    case Data of
-        <<"#t">> ->
-            true;
-        <<"#f">> ->
-            false;
-        <<"NIL">> ->
-            nil;
-        _ -> Data
-    end.
-
-report(Data) ->
-    lfe_io:format("~p~n", [Data]).
+%% Intended to be overriden by cosuming library.
+report(_Data) ->
+    ok.
 
 send(Socket, Request, Data) ->
     case gen_tcp:send(Socket, Request) of

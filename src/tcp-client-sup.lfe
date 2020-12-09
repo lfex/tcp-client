@@ -4,14 +4,18 @@
    (start_link 0)
    (init 1)))
 
+(defun SERVER () (MODULE))
 (defun MGR () 'tcp-client-mgr)
+(defun supervisor-opts () '())
 
 ;;;===================================================================
 ;;; API functions
 ;;;===================================================================
 
 (defun start_link ()
-  (supervisor:start_link `#(local ,(MODULE)) (MODULE) '()))
+  (supervisor:start_link `#(local ,(SERVER))
+                         (MODULE)
+                         (supervisor-opts)))
 
 ;;;===================================================================
 ;;; Supervisor callbacks
