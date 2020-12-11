@@ -58,7 +58,7 @@ disconnected(internal, connect, #{host := Host, port := Port, tcp_opts := Opts} 
             Data1 = maps:put(socket, Socket, Data),
             {next_state, connected, Data1};
         {error, Error} ->
-            io:puts("Connection failed: ~ts~n", [inet:format_error(Error)]),
+            io:format("Connection failed: ~ts~n", [inet:format_error(Error)]),
             keep_state_and_data
     end;
 
