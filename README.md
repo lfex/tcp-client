@@ -12,12 +12,13 @@
 ## About
 
 This library provides a simple TCP client for use in non-critical BEAM
-applications such as command line tools and REPLs. That being said, it is
-intended for use from OTP release apps, making use of `./config/sys.config`.
+applications such as command line tools and REPLs. That being said, it _is_
+intended to be used from OTP release apps (e.g., making use of configuration
+data in `./config/sys.config`).
 
 ## Configuration
 
-Update your applications `sys.config` to include the following:
+Update your application's `sys.config` to include the following:
 
 ``` erlang
 [
@@ -43,6 +44,8 @@ Update your applications `sys.config` to include the following:
  ]}
 ].
 ```
+
+You will need to update the M/Fs for both the paser and the reporter.
 
 ## Usage
 
