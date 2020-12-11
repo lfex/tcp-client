@@ -64,6 +64,38 @@ Send a message that will return immediately ("cast"):
 lfe> (tcp-client:cast-msg data)
 ```
 
+The [undertone project](https://github.com/lfex/undertone) uses this library
+with the following parser and reporter definitions:
+
+``` lisp
+(defun parse-response
+  ((packet `#(,reporter-mod ,reporter-func))
+   (let* ((raw-msgs (split-xt-packet packet))
+          (msgs (maybe-one-msg raw-msgs)))
+     (list-comp
+       ((<- x raw-msgs))
+       (apply reporter-mod reporter-func `(,x)))
+     (log-debug "Parsed packet: ~p" `(,msgs))
+     msgs)))
+
+(defun report (data)
+  (log-debug "Got data from TCP server: ~p" `(,data)))
+
+(defun rcv-delim () #b(0))
+
+(defun split-xt-packet (packet)
+  (list-comp
+    ((<- x (when (=/= x #b()))
+         (binary:split packet (rcv-delim) '(global))))
+    (xt.lang:->lfe x)))
+
+(defun maybe-one-msg
+  ((`(,msg . ()))
+    msg)
+   ((msgs)
+    msgs))
+```
+
 ## Licence
 
 Copyright © 2015, Carlos Andres Bolaños
