@@ -1,6 +1,6 @@
 # tcp-client
 
-*An LFE TCP client connection manager*
+*A simple LFE TCP client connection manager*
 
 [![Build Status][gh-actions-badge]][gh-actions]
 [![LFE Versions][lfe-badge]][lfe]
