@@ -11,7 +11,7 @@
             {port, 7099},
             {options, [
                 {tcp, [binary, {active, true}, {packet, 0}]},
-                {parser, {'tcp-client-mgr', parse_response}},
+                {parser, {'tcp-client-mgr', 'parse-response'}},
                 {reporter, {'tcp-client-mgr', report}}
             ]}
         ]}

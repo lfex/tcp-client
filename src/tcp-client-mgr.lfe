@@ -12,14 +12,15 @@
    (init 1))
   ;; Parser Callbacks
   (export
-   (parse_response 2)
+   (parse-response 2)
    (report 1)))
 
 (include-lib "lfe/include/clj.lfe")
 
 (defun SERVER () (MODULE))
 (defun STATEM_OPTS () '())
-(defun TIMEOUT () 500) ; milliseconds
+(defun INIT-TIMEOUT () 500)        ; milliseconds
+(defun MAX-TIMEOUT () (* 60 1000)) ; milliseconds
 
 ;;; Public API.
 
@@ -45,22 +46,30 @@
                     reporter ,reporter
                     tcp_opts ,tcp-opts
                     requests #m()
-                    from undefined))
+                    from undefined
+                    backoff ,(backoff:init (INIT-TIMEOUT) (MAX-TIMEOUT))
+                    timer undefined))
           (actions '(#(next_event internal connect))))
      `#(ok disconnected ,data ,actions))))
 
 (defun disconnected
   (('enter 'disconnected _data)
    'keep_state_and_data)
-  (('enter 'connected (= `#m(requests ,reqs) data))
+  (('enter 'connected (= `#m(requests ,reqs backoff ,b) data))
+   ;;(io:format "Got requests: ~p~n" `(,reqs))
    (io:format "Connection closed~n")
-   (lists:foreach (match-lambda ((`#(,_ ,from))
-                                 (gen_statem:reply from '#(error disconnected))))
-                  reqs)
-   (let ((data (clj:->> data
+   (case reqs
+     (`#m() 'ok ); (io:format "No requests to process.~n"))
+     (_ (lists:foreach (match-lambda (((= `#(,_ ,from) req))
+                                      (io:format "Got request: ~p~n" `(,req))
+                                      (gen_statem:reply from '#(error disconnected)))
+                                     ((req)
+                                      (io:format "Got unexpected request: ~p~n" `(,req))))
+                       reqs)))
+   (let* ((data (clj:->> data
                         (maps:put 'socket 'undefined)
                         (maps:put 'requests #m())))
-         (actions `(#(#(timeout reconnect) ,(TIMEOUT) undefined))))
+         (actions `(#(#(timeout reconnect) ,(backoff:get b) undefined))))
      `#(keep_state ,data ,actions)))
   (('internal 'connect (= `#m(host ,host port ,port tcp_opts ,opts) data))
    (case (gen_tcp:connect host port opts)
@@ -68,19 +77,23 @@
      (`#(error ,err) (progn
                        (io:format "Connection failed: ~ts~n" `(,(inet:format_error err)))
                        'keep_state_and_data))))
-  ((`#(timeout reconnect) _ data)
-   `#(keep_state ,data (#(next_event internal connect))))
+  (('#(timeout reconnect) _ (= `#m(backoff ,b) data))
+   (io:format "Attempting to reconnect ...~n")
+   (let ((`#(,_ ,b) (backoff:fail b)))
+     `#(keep_state ,(mset data 'backoff b) (#(next_event internal connect)))))
   ((`#(call ,from) `#(request ,_) _data)
    `#(keep_state_and_data `(#(reply ,from #(error disconnected)))))
   ((event-type event-content data)
-   (io:format "Got unexpected event: ~p~n" `(#m(event-type ,event-type
-                                                event-content ,event-content
-                                                data ,data)))
+   (io:format "Got unexpected disconnected event: ~p~n"
+              `(#m(event-type ,event-type
+                   event-content ,event-content
+                   data ,data)))
    'keep_state_and_data))
 
 (defun connected
-  (('enter _old-state _data)
-   'keep_state_and_data)
+  (('enter _old-state (= `#m(backoff ,b) data))
+   (let ((`#(,_ ,b) (backoff:succeed b)))
+     `#(keep_state ,(mset data 'backoff b))))
   (('info `#(tcp_closed ,sock) (= `#m(socket ,sock) data))
    `#(next_state disconnected ,data))
   ((`#(call ,from) `#(request ,req) (= `#m(socket ,sock) data))
@@ -102,12 +115,18 @@
      (case (=/= from 'undefined)
        ('true (gen_statem:reply from resp))
        (_ 'ok))
-     `#(keep_state ,data))))
+     `#(keep_state ,data)))
+  ((event-type event-content data)
+   (io:format "Got unexpected connected event: ~p~n"
+              `(#m(event-type ,event-type
+                   event-content ,event-content
+                   data ,data)))
+   'keep_state_and_data))
 
 ;;; Private functions
 
 ;; Intended to be overriden by cosuming library.
-(defun parse_response
+(defun parse-response
   ((pkt `#(,reporter-mod ,reporter-fun))
     pkt))
 
