@@ -19,6 +19,7 @@
 
 (defun SERVER () (MODULE))
 (defun STATEM_OPTS () '())
+(defun TIMEOUT () 500) ; milliseconds
 
 ;;; Public API.
 
@@ -59,7 +60,7 @@
    (let ((data (clj:->> data
                         (maps:put 'socket 'undefined)
                         (maps:put 'requests #m())))
-         (actions '(#(#(timeout reconnect) 500 undefined))))
+         (actions `(#(#(timeout reconnect) ,(TIMEOUT) undefined))))
      `#(keep_state ,data ,actions)))
   (('internal 'connect (= `#m(host ,host port ,port tcp_opts ,opts) data))
    (case (gen_tcp:connect host port opts)
