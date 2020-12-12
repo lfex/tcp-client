@@ -10,9 +10,11 @@
             {host, "localhost"},
             {port, 7099},
             {options, [
-                {tcp, [binary, {active, true}, {packet, 0}]},
+                {'tcp-opts', [binary, {active, true}, {packet, 0}]},
                 {parser, {'tcp-client-mgr', 'parse-response'}},
-                {reporter, {'tcp-client-mgr', report}}
+                {reporter, {'tcp-client-mgr', report}},
+                {'init-backoff', 500}, % ms
+                {'max-backoff', 60000} % ms
             ]}
         ]}
     ]},  

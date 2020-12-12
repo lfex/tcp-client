@@ -19,8 +19,6 @@
 
 (defun SERVER () (MODULE))
 (defun STATEM_OPTS () '())
-(defun INIT-TIMEOUT () 500)        ; milliseconds
-(defun MAX-TIMEOUT () (* 60 1000)) ; milliseconds
 
 ;;; Public API.
 
@@ -37,18 +35,16 @@
 
 (defun init
   ((`#(,host ,port ,opts))
-   (let* ((`#(tcp ,tcp-opts) (lists:keyfind 'tcp 1 opts))
-          (`#(parser ,parser) (lists:keyfind 'parser 1 opts))
-          (`#(reporter ,reporter) (lists:keyfind 'reporter 1 opts))
-          (data `#m(host ,host
-                    port ,port
-                    parser ,parser
-                    reporter ,reporter
-                    tcp_opts ,tcp-opts
-                    requests #m()
-                    from undefined
-                    backoff ,(backoff:init (INIT-TIMEOUT) (MAX-TIMEOUT))
-                    timer undefined))
+   (let* ((opts (maps:from_list opts))
+          (data (maps:merge
+                 opts
+                 `#m(host ,host
+                     port ,port
+                     requests #m()
+                     from undefined
+                     backoff ,(backoff:init (mref opts 'init-backoff)
+                                            (mref opts 'max-backoff))
+                     timer undefined)))
           (actions '(#(next_event internal connect))))
      `#(ok disconnected ,data ,actions))))
 
@@ -71,7 +67,7 @@
                         (maps:put 'requests #m())))
          (actions `(#(#(timeout reconnect) ,(backoff:get b) undefined))))
      `#(keep_state ,data ,actions)))
-  (('internal 'connect (= `#m(host ,host port ,port tcp_opts ,opts) data))
+  (('internal 'connect (= `#m(host ,host port ,port tcp-opts ,opts) data))
    (case (gen_tcp:connect host port opts)
      (`#(ok ,sock) `#(next_state connected ,(maps:put 'socket sock data)))
      (`#(error ,err) (progn
