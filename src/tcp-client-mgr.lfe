@@ -67,12 +67,12 @@
                         (maps:put 'requests #m())))
          (actions `(#(#(timeout reconnect) ,(backoff:get b) undefined))))
      `#(keep_state ,data ,actions)))
-  (('internal 'connect (= `#m(host ,host port ,port tcp-opts ,opts) data))
+  (('internal 'connect (= `#m(host ,host port ,port tcp-opts ,opts backoff ,b) data))
    (case (gen_tcp:connect host port opts)
      (`#(ok ,sock) `#(next_state connected ,(maps:put 'socket sock data)))
-     (`#(error ,err) (progn
+     (`#(error ,err) (let ((actions `(#(#(timeout reconnect) ,(backoff:get b) undefined))))
                        (io:format "Connection failed: ~ts~n" `(,(inet:format_error err)))
-                       'keep_state_and_data))))
+                       `#(keep_state ,data ,actions)))))
   (('#(timeout reconnect) _ (= `#m(backoff ,b) data))
    (io:format "Attempting to reconnect ...~n")
    (let ((`#(,_ ,b) (backoff:fail b)))
@@ -89,6 +89,7 @@
 (defun connected
   (('enter _old-state (= `#m(backoff ,b) data))
    (let ((`#(,_ ,b) (backoff:succeed b)))
+     (io:format "Connected.")
      `#(keep_state ,(mset data 'backoff b))))
   (('info `#(tcp_closed ,sock) (= `#m(socket ,sock) data))
    `#(next_state disconnected ,data))
