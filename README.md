@@ -16,6 +16,9 @@ applications such as command line tools and REPLs. That being said, it _is_
 intended to be used from OTP release apps (e.g., making use of configuration
 data in `./config/sys.config`).
 
+Exponential backoff for an unavailable TCP server is provided via Fred's
+[Erlang backoff library](https://github.com/ferd/backoff).
+
 ## Configuration
 
 Update your application's `sys.config` to include the following:
@@ -38,7 +41,10 @@ Update your application's `sys.config` to include the following:
              {parser, {Mod, Func}},
              %% It is up to the parser to call this next M/F, but the reporter
              %% tuple is what gets passed to the paser M/F.
-             {reporter, {Mod, Func}}
+             {reporter, {Mod, Func}},
+             %% Exponential backoff support with initial and max values
+             {'init-backoff', 500}, % in ms
+             {'max-backoff', 60000} % in ms
          ]}
      ]}
  ]}
@@ -117,7 +123,7 @@ Copyright © 2020, Duncan McGreggor
 [gh-actions]: https://github.com/lfex/tcp-client/actions
 [lfe]: https://github.com/rvirding/lfe
 [lfe-badge]: https://img.shields.io/badge/lfe-2.0-blue.svg
-[erlang-badge]: https://img.shields.io/badge/erlang-19%20to%2023-blue.svg
+[erlang-badge]: https://img.shields.io/badge/erlang-21%20to%2023-blue.svg
 [versions]: https://github.com/lfex/tcp-client/blob/master/.github/workflows/cicd.yml
 [github-tag]: https://github.com/lfex/tcp-client/tags
 [github-tag-badge]: https://img.shields.io/github/tag/lfex/tcp-client.svg

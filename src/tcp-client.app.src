@@ -13,8 +13,8 @@
                 {'tcp-opts', [binary, {active, true}, {packet, 0}]},
                 {parser, {'tcp-client-mgr', 'parse-response'}},
                 {reporter, {'tcp-client-mgr', report}},
-                {'init-backoff', 500}, % ms
-                {'max-backoff', 60000} % ms
+                {'init-backoff', 500}, % in ms
+                {'max-backoff', 60000} % in ms
             ]}
         ]}
     ]},  
