@@ -1,6 +1,6 @@
 {application, 'tcp-client', [
     {description, "A simple LFE TCP client connection manager"},
-    {vsn, "0.2.0-dev"},
+    {vsn, "0.2.0"},
     {applications, [
         kernel,
         stdlib
