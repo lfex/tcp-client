@@ -22,7 +22,7 @@ do_recv(Sock, Bs) ->
   end.
 
 callback(Pid) ->
-  io:format("[~p] Msg 1: ~p~n", [self(), 'tcp-mgr-socket':send(Pid, "Hi!")]),
+  io:format("[~p] Msg 1: ~p~n", [self(), 'tcp-client-mgr':send(Pid, "Hi!")]),
   timer:sleep(2000),
-  io:format("[~p] Msg 2: ~p~n", [self(), 'tcp-mgr-socket':send(Pid, "Hi!")]),
-  io:format("[~p] Msg 3: ~p~n", [self(), 'tcp-mgr-socket':send(Pid, "Hi!")]).
+  io:format("[~p] Msg 2: ~p~n", [self(), 'tcp-client-mgr':send(Pid, "Hi!")]),
+  io:format("[~p] Msg 3: ~p~n", [self(), 'tcp-client-mgr':send(Pid, "Hi!")]).
