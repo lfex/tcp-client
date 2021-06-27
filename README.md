@@ -107,12 +107,11 @@ with the following parser and reporter definitions:
 
 ## Licence
 
-Copyright © 2015, Carlos Andres Bolaños
+Copyright © 2020-2021, Duncan McGreggor
 
 Copyright © 2019, Andrea Leopardi
 
-Copyright © 2020, Duncan McGreggor
-
+Copyright © 2015, Carlos Andres Bolaños
 
 [//]: ---Named-Links---
 
