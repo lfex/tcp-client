@@ -1,6 +1,6 @@
 {application, 'tcp-client', [
     {description, "A simple LFE TCP client connection manager"},
-    {vsn, "0.2.0"},
+    {vsn, "0.2.1"},
     {applications, [
         kernel,
         stdlib
@@ -20,5 +20,14 @@
     ]},  
     {modules, []},
     {mod, {'tcp-client-app', []}},
-    {registered, []}
+    {registered, []},
+
+    {pkg_name, tcp_client},
+    {maintainers, ["Duncan McGreggor"]},
+    {licenses, ["Apache 2.0"]},
+    {links, [
+        {"GitHub", "https://github.com/lfex/tcp-client"},
+        {"Hex", "https://hex.pm/packages/tcp_client"}
+    ]},
+    {exclude_files, ["priv/images/*"]}
 ]}.
